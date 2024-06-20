@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package analytics;
+
+option go_package = "./;analyticspb";
+
+service AnalyticsService {
+    rpc GetStatsByURL(GetStatsRequest) returns (GetStatsResponse);
+}
+
+message GetStatsRequest {
+    string short_url = 1;
+}
+
+message GetStatsResponse {
+    int64 usage_count = 1;
+}

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package storage;
+
+option go_package = "./;storagepb";
+
+service StorageService {
+  rpc SetURL(SetURLRequest) returns (SetURLResponse);
+  rpc GetURL(GetURLRequest) returns (GetURLResponse);
+}
+
+message SetURLRequest {
+  string long_url = 1;
+  string short_url = 2;
+}
+
+message SetURLResponse {
+  bool success = 1;
+}
+
+message GetURLRequest {
+  string short_url = 1;
+}
+
+message GetURLResponse {
+  string long_url = 1;
+}
