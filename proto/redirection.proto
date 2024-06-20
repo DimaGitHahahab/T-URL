@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package redirection;
+
+option go_package = "./;redirectionpb";
+
+service RedirectionService {
+  rpc GetLongURL(GetOriginalURLRequest) returns (GetLongURLResponse);
+}
+
+message GetOriginalURLRequest {
+  string short_url = 1;
+}
+
+message GetLongURLResponse {
+  string long_url = 1;
+}
