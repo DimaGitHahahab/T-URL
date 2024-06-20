@@ -1,13 +1,13 @@
 #!/bin/bash
-mkdir -p shortening
-mkdir -p redirection
-mkdir -p storage
-mkdir -p analytics
+mkdir -p shorteningpb
+mkdir -p redirectionpb
+mkdir -p storagepb
+mkdir -p analyticspb
 
-protoc --go_out=shortening --go-grpc_out=shortening shortening.proto
-protoc --go_out=redirection --go-grpc_out=redirection redirection.proto
-protoc --go_out=storage --go-grpc_out=storage storage.proto
-protoc --go_out=analytics --go-grpc_out=analytics analytics.proto
+protoc --go_out=shorteningpb --go-grpc_out=shorteningpb shortening.proto
+protoc --go_out=redirectionpb --go-grpc_out=redirectionpb redirection.proto
+protoc --go_out=storagepb --go-grpc_out=storagepb storage.proto
+protoc --go_out=analyticspb --go-grpc_out=analyticspb analytics.proto
 
 mkdir -p ../shortening-microservice/proto/
 mkdir -p ../redirection-microservice/proto/
@@ -15,11 +15,16 @@ mkdir -p ../storage-microservice/proto/
 mkdir -p ../analytics-microservice/proto/
 mkdir -p ../api-gateway/proto/
 
-cp -r shortening ../shortening-microservice/proto/
-cp -r redirection ../redirection-microservice/proto/
-cp -r storage ../storage-microservice/proto/
-cp -r analytics ../analytics-microservice/proto/
+cp -r shorteningpb ../shortening-microservice/proto/
+cp -r redirectionpb ../redirection-microservice/proto/
+cp -r storagepb ../storage-microservice/proto/
+cp -r analyticspb ../analytics-microservice/proto/
 
-cp -r shortening ../api-gateway/proto/
-cp -r redirection ../api-gateway/proto/
-cp -r analytics ../api-gateway/proto/
+cp -r shorteningpb ../api-gateway/proto/
+cp -r redirectionpb ../api-gateway/proto/
+cp -r analyticspb ../api-gateway/proto/
+
+rm -rf ./shorteningpb
+rm -rf ./redirectionpb
+rm -rf ./storagepb
+rm -rf ./analyticspb
