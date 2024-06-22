@@ -37,3 +37,14 @@ services:
         condition: service_healthy
     restart: always
 
+  shortening-microservice:
+    container_name: shortening-microservice
+    build:
+      context: ./shortening-microservice
+      dockerfile: Dockerfile
+    ports:
+      - "50052:50052"
+    depends_on:
+      - storage-microservice
+
+
