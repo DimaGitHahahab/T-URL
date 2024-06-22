@@ -47,4 +47,14 @@ services:
     depends_on:
       - storage-microservice
 
+  redirection-microservice:
+    container_name: redirection-microservice
+    build:
+      context: ./redirection-microservice
+      dockerfile: Dockerfile
+    ports:
+      - "50053:50053"
+    depends_on:
+      - storage-microservice
+
 
