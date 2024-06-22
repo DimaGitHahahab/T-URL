@@ -46,7 +46,7 @@ message CheckShortURLResponse {
 }
 
 message CheckLongURLRequest {
-  string original_url = 1;
+  string long_url = 1;
 }
 
 message CheckLongURLResponse {

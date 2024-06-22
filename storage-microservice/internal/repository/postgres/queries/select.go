@@ -15,7 +15,7 @@ SELECT EXISTS(
 
 func (q *Queries) ShortURLExists(ctx context.Context, short string) (bool, error) {
 	var exists bool
-	err := q.pool.QueryRow(ctx, shortExists).Scan(&exists)
+	err := q.pool.QueryRow(ctx, shortExists, short).Scan(&exists)
 	if err != nil {
 		return false, fmt.Errorf("failed to check if short URL %s exists: %w", short, err)
 	}
@@ -33,7 +33,7 @@ SELECT EXISTS(
 
 func (q *Queries) LongURLExists(ctx context.Context, long string) (bool, error) {
 	var exists bool
-	err := q.pool.QueryRow(ctx, longExists).Scan(&exists)
+	err := q.pool.QueryRow(ctx, longExists, long).Scan(&exists)
 	if err != nil {
 		return false, fmt.Errorf("failed to check if long URL %s exists: %w", long, err)
 	}

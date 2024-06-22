@@ -57,12 +57,20 @@ func (r *redisRepo) GetShortByLong(ctx context.Context, long string) (string, er
 
 func (r *redisRepo) DeleteByShort(ctx context.Context, short string) error {
 	err := r.redis.Del(ctx, short).Err()
-	return fmt.Errorf("failed to delete by short URL: %w", err)
+	if err != nil {
+		return fmt.Errorf("failed to delete by short URL: %w", err)
+	}
+
+	return nil
 }
 
 func (r *redisRepo) DeleteByLong(ctx context.Context, long string) error {
 	err := r.redis.Del(ctx, long).Err()
-	return fmt.Errorf("failed to delete by long URL: %w", err)
+	if err != nil {
+		return fmt.Errorf("failed to delete by long URL: %w", err)
+	}
+
+	return nil
 }
 
 func (r *redisRepo) ShortURLExists(ctx context.Context, short string) (bool, error) {
