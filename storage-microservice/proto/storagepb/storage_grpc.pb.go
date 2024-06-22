@@ -24,6 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type StorageServiceClient interface {
 	SetURL(ctx context.Context, in *SetURLRequest, opts ...grpc.CallOption) (*SetURLResponse, error)
 	GetURL(ctx context.Context, in *GetURLRequest, opts ...grpc.CallOption) (*GetURLResponse, error)
+	DeleteURL(ctx context.Context, in *DeleteURLRequest, opts ...grpc.CallOption) (*DeleteURLResponse, error)
+	CheckShortURL(ctx context.Context, in *CheckShortURLRequest, opts ...grpc.CallOption) (*CheckShortURLResponse, error)
+	CheckLongURL(ctx context.Context, in *CheckLongURLRequest, opts ...grpc.CallOption) (*CheckLongURLResponse, error)
 }
 
 type storageServiceClient struct {
@@ -52,12 +55,42 @@ func (c *storageServiceClient) GetURL(ctx context.Context, in *GetURLRequest, op
 	return out, nil
 }
 
+func (c *storageServiceClient) DeleteURL(ctx context.Context, in *DeleteURLRequest, opts ...grpc.CallOption) (*DeleteURLResponse, error) {
+	out := new(DeleteURLResponse)
+	err := c.cc.Invoke(ctx, "/storage.StorageService/DeleteURL", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageServiceClient) CheckShortURL(ctx context.Context, in *CheckShortURLRequest, opts ...grpc.CallOption) (*CheckShortURLResponse, error) {
+	out := new(CheckShortURLResponse)
+	err := c.cc.Invoke(ctx, "/storage.StorageService/CheckShortURL", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageServiceClient) CheckLongURL(ctx context.Context, in *CheckLongURLRequest, opts ...grpc.CallOption) (*CheckLongURLResponse, error) {
+	out := new(CheckLongURLResponse)
+	err := c.cc.Invoke(ctx, "/storage.StorageService/CheckLongURL", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageServiceServer is the server API for StorageService service.
 // All implementations must embed UnimplementedStorageServiceServer
 // for forward compatibility
 type StorageServiceServer interface {
 	SetURL(context.Context, *SetURLRequest) (*SetURLResponse, error)
 	GetURL(context.Context, *GetURLRequest) (*GetURLResponse, error)
+	DeleteURL(context.Context, *DeleteURLRequest) (*DeleteURLResponse, error)
+	CheckShortURL(context.Context, *CheckShortURLRequest) (*CheckShortURLResponse, error)
+	CheckLongURL(context.Context, *CheckLongURLRequest) (*CheckLongURLResponse, error)
 	mustEmbedUnimplementedStorageServiceServer()
 }
 
@@ -70,6 +103,15 @@ func (UnimplementedStorageServiceServer) SetURL(context.Context, *SetURLRequest)
 }
 func (UnimplementedStorageServiceServer) GetURL(context.Context, *GetURLRequest) (*GetURLResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetURL not implemented")
+}
+func (UnimplementedStorageServiceServer) DeleteURL(context.Context, *DeleteURLRequest) (*DeleteURLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteURL not implemented")
+}
+func (UnimplementedStorageServiceServer) CheckShortURL(context.Context, *CheckShortURLRequest) (*CheckShortURLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckShortURL not implemented")
+}
+func (UnimplementedStorageServiceServer) CheckLongURL(context.Context, *CheckLongURLRequest) (*CheckLongURLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckLongURL not implemented")
 }
 func (UnimplementedStorageServiceServer) mustEmbedUnimplementedStorageServiceServer() {}
 
@@ -120,6 +162,60 @@ func _StorageService_GetURL_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageService_DeleteURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteURLRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServiceServer).DeleteURL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storage.StorageService/DeleteURL",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServiceServer).DeleteURL(ctx, req.(*DeleteURLRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageService_CheckShortURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckShortURLRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServiceServer).CheckShortURL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storage.StorageService/CheckShortURL",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServiceServer).CheckShortURL(ctx, req.(*CheckShortURLRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageService_CheckLongURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckLongURLRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageServiceServer).CheckLongURL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/storage.StorageService/CheckLongURL",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageServiceServer).CheckLongURL(ctx, req.(*CheckLongURLRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StorageService_ServiceDesc is the grpc.ServiceDesc for StorageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +230,18 @@ var StorageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetURL",
 			Handler:    _StorageService_GetURL_Handler,
+		},
+		{
+			MethodName: "DeleteURL",
+			Handler:    _StorageService_DeleteURL_Handler,
+		},
+		{
+			MethodName: "CheckShortURL",
+			Handler:    _StorageService_CheckShortURL_Handler,
+		},
+		{
+			MethodName: "CheckLongURL",
+			Handler:    _StorageService_CheckLongURL_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

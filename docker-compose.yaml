@@ -1,0 +1,39 @@
+services:
+  url-cache-redis:
+    container_name: url-cache-redis
+    hostname: url-cache-redis
+    image: redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "6379:6379"
+  urls-db-postgres:
+    image: 'postgres:latest'
+    container_name: urls-db-postgres
+    env_file:
+      - ./storage-microservice/.env
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  storage-microservice:
+    container_name: storage-microservice
+    build:
+      context: ./storage-microservice
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    depends_on:
+      urls-db-postgres:
+        condition: service_healthy
+      url-cache-redis:
+        condition: service_healthy
+    restart: always
+

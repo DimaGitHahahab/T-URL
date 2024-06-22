@@ -7,6 +7,9 @@ option go_package = "./;storagepb";
 service StorageService {
   rpc SetURL(SetURLRequest) returns (SetURLResponse);
   rpc GetURL(GetURLRequest) returns (GetURLResponse);
+  rpc DeleteURL(DeleteURLRequest) returns (DeleteURLResponse);
+  rpc CheckShortURL(CheckShortURLRequest) returns (CheckShortURLResponse);
+  rpc CheckLongURL(CheckLongURLRequest) returns (CheckLongURLResponse);
 }
 
 message SetURLRequest {
@@ -24,4 +27,28 @@ message GetURLRequest {
 
 message GetURLResponse {
   string long_url = 1;
+}
+
+message DeleteURLRequest {
+  string short_url = 1;
+}
+
+message DeleteURLResponse {
+  bool success = 1;
+}
+
+message CheckShortURLRequest {
+  string short_url = 1;
+}
+
+message CheckShortURLResponse {
+  bool exists = 1;
+}
+
+message CheckLongURLRequest {
+  string long_url = 1;
+}
+
+message CheckLongURLResponse {
+  bool exists = 1;
 }
