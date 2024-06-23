@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AnalyticsServiceClient interface {
 	GetStatsByURL(ctx context.Context, in *GetStatsRequest, opts ...grpc.CallOption) (*GetStatsResponse, error)
+	UpdateStatsByURL(ctx context.Context, in *UpdateStatsRequest, opts ...grpc.CallOption) (*UpdateStatsResponse, error)
 }
 
 type analyticsServiceClient struct {
@@ -42,11 +43,21 @@ func (c *analyticsServiceClient) GetStatsByURL(ctx context.Context, in *GetStats
 	return out, nil
 }
 
+func (c *analyticsServiceClient) UpdateStatsByURL(ctx context.Context, in *UpdateStatsRequest, opts ...grpc.CallOption) (*UpdateStatsResponse, error) {
+	out := new(UpdateStatsResponse)
+	err := c.cc.Invoke(ctx, "/analytics.AnalyticsService/UpdateStatsByURL", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AnalyticsServiceServer is the server API for AnalyticsService service.
 // All implementations must embed UnimplementedAnalyticsServiceServer
 // for forward compatibility
 type AnalyticsServiceServer interface {
 	GetStatsByURL(context.Context, *GetStatsRequest) (*GetStatsResponse, error)
+	UpdateStatsByURL(context.Context, *UpdateStatsRequest) (*UpdateStatsResponse, error)
 	mustEmbedUnimplementedAnalyticsServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedAnalyticsServiceServer struct {
 
 func (UnimplementedAnalyticsServiceServer) GetStatsByURL(context.Context, *GetStatsRequest) (*GetStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStatsByURL not implemented")
+}
+func (UnimplementedAnalyticsServiceServer) UpdateStatsByURL(context.Context, *UpdateStatsRequest) (*UpdateStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatsByURL not implemented")
 }
 func (UnimplementedAnalyticsServiceServer) mustEmbedUnimplementedAnalyticsServiceServer() {}
 
@@ -88,6 +102,24 @@ func _AnalyticsService_GetStatsByURL_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AnalyticsService_UpdateStatsByURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsServiceServer).UpdateStatsByURL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/analytics.AnalyticsService/UpdateStatsByURL",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsServiceServer).UpdateStatsByURL(ctx, req.(*UpdateStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AnalyticsService_ServiceDesc is the grpc.ServiceDesc for AnalyticsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var AnalyticsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetStatsByURL",
 			Handler:    _AnalyticsService_GetStatsByURL_Handler,
+		},
+		{
+			MethodName: "UpdateStatsByURL",
+			Handler:    _AnalyticsService_UpdateStatsByURL_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
