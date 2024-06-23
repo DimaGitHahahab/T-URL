@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"redirection/proto/analyticspb"
 	"redirection/proto/storagepb"
 
 	"google.golang.org/grpc/codes"
@@ -16,12 +17,14 @@ var (
 )
 
 type RedirectionService struct {
-	storageClient storagepb.StorageServiceClient
+	storageClient   storagepb.StorageServiceClient
+	analyticsClient analyticspb.AnalyticsServiceClient
 }
 
-func NewRedirectionService(c storagepb.StorageServiceClient) *RedirectionService {
+func NewRedirectionService(st storagepb.StorageServiceClient, a analyticspb.AnalyticsServiceClient) *RedirectionService {
 	return &RedirectionService{
-		storageClient: c,
+		storageClient:   st,
+		analyticsClient: a,
 	}
 }
 
@@ -34,18 +37,37 @@ func (r *RedirectionService) GetLongURL(ctx context.Context, short string) (stri
 		ShortUrl: short,
 	})
 	if err != nil {
-		st, ok := status.FromError(err)
-		if !ok {
-			return "", fmt.Errorf("failed to get %s from storage: %w", short, err)
-		}
+		return r.handleError(short, err)
+	}
 
-		switch st.Code() {
-		case codes.NotFound:
-			return "", fmt.Errorf("%s: %w", short, ErrNotFound)
-		default:
-			return "", fmt.Errorf("failed to get %s from storage: %w", short, err)
-		}
+	if err = r.IncRedirecitionStats(ctx, short); err != nil {
+		return "", fmt.Errorf("failed to increment redirection stats: %w", err)
 	}
 
 	return resp.GetLongUrl(), nil
+}
+
+func (r *RedirectionService) handleError(short string, err error) (string, error) {
+	st, ok := status.FromError(err)
+	if !ok {
+		return "", fmt.Errorf("failed to get %s from storage: %w", short, err)
+	}
+
+	switch st.Code() {
+	case codes.NotFound:
+		return "", fmt.Errorf("%s: %w", short, ErrNotFound)
+	default:
+		return "", fmt.Errorf("failed to get %s from storage: %w", short, err)
+	}
+}
+
+func (r *RedirectionService) IncRedirecitionStats(ctx context.Context, short string) error {
+	resp, err := r.analyticsClient.UpdateStatsByURL(ctx, &analyticspb.UpdateStatsRequest{
+		ShortUrl: short,
+	})
+	if err != nil || !resp.GetSuccess() {
+		return fmt.Errorf("failed to update stats: %w", err)
+	}
+
+	return nil
 }
