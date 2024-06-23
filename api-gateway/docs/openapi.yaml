@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: URL Shortening Service
+  description: A service for creating short URLs that redirect to the original long URLs with ability to check the statistics of usage.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /shorten:
+    post:
+      summary: Create a short URL
+      description: Takes a long URL and returns a shortened version.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortenRequest'
+      responses:
+        '200':
+          description: Shortened URL created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortenResponse'
+        '400':
+          description: Invalid long URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /{short_url}:
+    get:
+      summary: Redirect to the original URL
+      description: Redirects to the original long URL given a short URL.
+      parameters:
+        - in: path
+          name: short_url
+          required: true
+          schema:
+            type: string
+          description: The short URL key
+      responses:
+        '302':
+          description: Redirection to the original URL
+          headers:
+            Location:
+              description: The URL to which the client is redirected
+              schema:
+                type: string
+        '404':
+          description: Short URL not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /stats:
+    post:
+      summary: Get usage statistics for a short URL
+      description: Returns the number of times the short URL was used and the last time it was accessed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatsRequest'
+      responses:
+        '200':
+          description: URL usage statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+        '404':
+          description: Short URL not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ShortenRequest:
+      type: object
+      properties:
+        long_url:
+          type: string
+          example: https://github.com/DimaGitHahahab/T-URL
+    ShortenResponse:
+      type: object
+      properties:
+        short_url:
+          type: string
+          example: http://localhost:8080/0CFSW
+    StatsRequest:
+      type: object
+      properties:
+        short_url:
+          type: string
+          example: http://localhost:8080/0CFSW
+    StatsResponse:
+      type: object
+      properties:
+        usage_count:
+          type: integer
+          example: 42
+        last_accessed:
+          type: string
+          format: date-time
+          example: 2023-06-21T18:25:43.511Z
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid URL format

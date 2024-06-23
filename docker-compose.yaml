@@ -57,4 +57,14 @@ services:
     depends_on:
       - storage-microservice
 
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - shortening-microservice
+      - redirection-microservice
 

@@ -8,8 +8,6 @@ import (
 	"shortening/proto/storagepb"
 )
 
-const shortURLPrefix = "http://localhost:8080/"
-
 var (
 	ErrInvalidURL = errors.New("provided URL is invalid")
 )
@@ -33,8 +31,7 @@ func (s *ShorteningService) Shorten(ctx context.Context, long string) (string, e
 		return "", fmt.Errorf("%s: %w", long, ErrInvalidURL)
 	}
 
-	key := s.gen.GenerateKey(long)
-	shortKey := shortURLPrefix + key
+	shortKey := s.gen.GenerateKey(long)
 
 	resp, err := s.storageClient.SetURL(ctx, &storagepb.SetURLRequest{
 		LongUrl:  long,
