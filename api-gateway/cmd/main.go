@@ -15,6 +15,7 @@ import (
 	"api-gateway/internal/handler"
 	"api-gateway/internal/handlergen"
 	"api-gateway/internal/service"
+	"api-gateway/proto/analyticspb"
 	"api-gateway/proto/redirectionpb"
 	"api-gateway/proto/shorteningpb"
 
@@ -53,9 +54,20 @@ func main() {
 	defer redirectionConn.Close()
 	log.Println("Dialed redirection service successfully!")
 
+	log.Println("Dialing analytics service...")
+	analyticsConn, err := grpc.NewClient(config.AnalyticsAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatal("Failed to dial analytics service:", err)
+	}
+	defer analyticsConn.Close()
+	log.Println("Dialed analytics service successfully!")
+
 	s := service.NewGatewayService(
 		shorteningpb.NewShorteningServiceClient(shorteningConn),
 		redirectionpb.NewRedirectionServiceClient(redirectionConn),
+		analyticspb.NewAnalyticsServiceClient(analyticsConn),
 	)
 
 	h := handler.NewHandler(*s)
@@ -94,6 +106,7 @@ type Config struct {
 	ServerPort      string `envconfig:"PORT" required:"true"`
 	RedirectionAddr string `envconfig:"REDIRECTION_ADDR" required:"true"`
 	ShorteningAddr  string `envconfig:"SHORTENING_ADDR" required:"true"`
+	AnalyticsAddr   string `envconfig:"ANALYTICS_ADDR" required:"true"`
 }
 
 func LoadConfig() (*Config, error) {

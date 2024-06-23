@@ -50,8 +50,23 @@ func (h *Handler) GetShortUrl(c *gin.Context, shortUrl string) {
 }
 
 func (h *Handler) PostStats(c *gin.Context) {
-	// TODO
-	panic("impelement me")
+	var body handlergen.PostStatsJSONRequestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		errMsg := err.Error()
+		c.JSON(http.StatusBadRequest, handlergen.ErrorResponse{Error: &errMsg})
+	}
+
+	count, lastAccessed, err := h.gateway.GetStats(c, *body.ShortUrl)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+
+	var response handlergen.StatsResponse
+	response.UsageCount = &count
+	response.LastAccessed = lastAccessed
+
+	c.JSON(http.StatusOK, response)
 }
 
 func handleError(c *gin.Context, err error) {
