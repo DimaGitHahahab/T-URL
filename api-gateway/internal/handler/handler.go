@@ -61,7 +61,7 @@ func handleError(c *gin.Context, err error) {
 	)
 	switch {
 	case errors.Is(err, service.ErrInvalidURL):
-		errMsg = fmt.Sprintf("invalid URL provided: %s", err.Error())
+		errMsg = "provided URL is invalid"
 		response.Error = &errMsg
 		c.JSON(http.StatusBadRequest, response)
 	case errors.Is(err, service.ErrURLNotFound):
