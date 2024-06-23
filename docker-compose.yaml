@@ -56,6 +56,7 @@ services:
       - "50053:50053"
     depends_on:
       - storage-microservice
+      - analytics-microservice
 
   api-gateway:
     container_name: api-gateway
@@ -67,4 +68,12 @@ services:
     depends_on:
       - shortening-microservice
       - redirection-microservice
+      - analytics-microservice
 
+  analytics-microservice:
+    container_name: analytics-microservice
+    build:
+      context: ./analytics-microservice
+      dockerfile: Dockerfile
+    ports:
+      - "50055:50055"

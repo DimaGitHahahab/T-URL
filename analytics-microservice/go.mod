@@ -3,6 +3,8 @@ module analytics
 go 1.22.0
 
 require (
+	github.com/joho/godotenv v1.5.1
+	github.com/kelseyhightower/envconfig v1.4.0
 	google.golang.org/grpc v1.64.0
 	google.golang.org/protobuf v1.34.2
 )

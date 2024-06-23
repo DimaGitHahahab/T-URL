@@ -9,6 +9,7 @@ import (
 
 	"redirection/internal/server"
 	"redirection/internal/service"
+	"redirection/proto/analyticspb"
 	"redirection/proto/storagepb"
 
 	"github.com/joho/godotenv"
@@ -16,8 +17,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
-
-// TODO later: RabbitMQ -> Analytics Microservice
 
 func main() {
 	log.Println("Loading config...")
@@ -28,18 +27,29 @@ func main() {
 	log.Println("Loaded config successfully!")
 
 	log.Println("Dialing storage service...")
-	conn, err := grpc.NewClient(config.StorageAddr,
+	stConn, err := grpc.NewClient(config.StorageAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		log.Fatal("Failed to dial storage service:", err)
 	}
-	defer conn.Close()
+	defer stConn.Close()
 	log.Println("Dialed storage service successfully!")
+	stClient := storagepb.NewStorageServiceClient(stConn)
 
-	cl := storagepb.NewStorageServiceClient(conn)
+	log.Println("Dialing analytics service...")
+	analyticsConn, err := grpc.NewClient(config.AnalyticsAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatal("Failed to dial analytics service:", err)
+	}
+	defer analyticsConn.Close()
+	log.Println("Dialed analytics service successfully!")
 
-	s := service.NewRedirectionService(cl)
+	analyticsCl := analyticspb.NewAnalyticsServiceClient(analyticsConn)
+
+	s := service.NewRedirectionService(stClient, analyticsCl)
 
 	srv := server.New(s)
 
@@ -59,8 +69,9 @@ func main() {
 }
 
 type Config struct {
-	ServerPort  string `envconfig:"PORT" required:"true"`
-	StorageAddr string `envconfig:"STORAGE_ADDR" required:"true"`
+	ServerPort    string `envconfig:"PORT" required:"true"`
+	StorageAddr   string `envconfig:"STORAGE_ADDR" required:"true"`
+	AnalyticsAddr string `envconfig:"ANALYTICS_ADDR" required:"true"`
 }
 
 func LoadConfig() (*Config, error) {

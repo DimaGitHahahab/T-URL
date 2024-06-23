@@ -27,6 +27,8 @@ cp -r analyticspb ../api-gateway/proto/
 cp -r storagepb ../shortening-microservice/proto/
 cp -r storagepb ../redirection-microservice/proto/
 
+cp -r analyticspb ../redirection-microservice/proto/
+
 rm -rf ./shorteningpb
 rm -rf ./redirectionpb
 rm -rf ./storagepb
