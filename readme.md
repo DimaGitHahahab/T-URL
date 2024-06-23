@@ -1,4 +1,3 @@
-## System architecture
 ```mermaid
 graph TD
     A[User] -->|REST| B[API Gateway: Gin-Gonic]
