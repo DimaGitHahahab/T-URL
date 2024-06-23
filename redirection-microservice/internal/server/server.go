@@ -25,6 +25,9 @@ func (r *RedirectionServer) GetLongURL(ctx context.Context, request *redirection
 		if errors.Is(err, service.ErrEmptyURL) {
 			return nil, status.Errorf(codes.InvalidArgument, "empty URL: %v", err)
 		}
+		if errors.Is(err, service.ErrNotFound) {
+			return nil, status.Errorf(codes.NotFound, "URL not found: %v", err)
+		}
 		return nil, status.Errorf(codes.Internal, "failed to get long URL: %v", err)
 	}
 

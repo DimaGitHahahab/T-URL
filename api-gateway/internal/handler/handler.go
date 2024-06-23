@@ -65,7 +65,7 @@ func handleError(c *gin.Context, err error) {
 		response.Error = &errMsg
 		c.JSON(http.StatusBadRequest, response)
 	case errors.Is(err, service.ErrURLNotFound):
-		errMsg = fmt.Sprintf("URL not found: %s", err.Error())
+		errMsg = "URL not found"
 		response.Error = &errMsg
 		c.JSON(http.StatusNotFound, response)
 	default:
